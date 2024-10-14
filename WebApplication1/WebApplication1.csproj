@@ -6,4 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="web.config" />
+    <Content Include="web.config.transform" />
+  </ItemGroup>
+
+  <Target Name="TransformWebConfig" AfterTargets="Publish">
+    <TransformXml
+      Source="web.config"
+      Transform="web.config.transform"
+      Destination="$(PublishDir)\web.config" />
+  </Target>
+  
 </Project>
