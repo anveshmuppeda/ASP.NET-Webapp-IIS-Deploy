@@ -34,6 +34,14 @@ stages:
             projects: '*.sln'
             arguments: --configuration Release
 
+        - powershell: |
+            $webConfig = Get-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+            $webConfig = $webConfig -replace '#{ASPNETCORE_ENVIRONMENT}#', '$(ASPNETCORE_ENVIRONMENT)'
+            $webConfig = $webConfig -replace '#{CustomSetting}#', '$(CustomSetting)'
+            $webConfig | Set-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+          displayName: 'Update web.config with environment variables'
+
+
         # - task: DotNetCoreCLI@2
         #   displayName: Test
         #   inputs:
