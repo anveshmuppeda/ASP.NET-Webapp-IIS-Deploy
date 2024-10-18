@@ -14,6 +14,10 @@ variables:
   websiteName: 'WebApplication'
   appPoolName: 'WebApplication'
   Logging.LogLevel.Default: "Warning"
+  system.debug: "true"
+  ASPNETCORE_ENVIRONMENT: "Beta"
+  AdminUserName: "Testing"
+  AdminPassword: "Pwd"
 
 stages:
 - stage: 'Build'
@@ -32,15 +36,9 @@ stages:
           inputs:
             command: 'build'
             projects: '*.sln'
-            arguments: --configuration Release
+            arguments: '--configuration Release /p:TransformWebConfigEnabled=false /p:AutoParameterizationWebConfigConnectionStrings=false /p:MarkWebConfigAssistFilesAsExclude=false /p:ProfileTransformWebConfigEnabled=false /p:IsTransformWebConfigDisabled=true'
 
-        - powershell: |
-            $webConfig = Get-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
-            $webConfig = $webConfig -replace '#{ASPNETCORE_ENVIRONMENT}#', '$(ASPNETCORE_ENVIRONMENT)'
-            $webConfig = $webConfig -replace '#{CustomSetting}#', '$(CustomSetting)'
-            $webConfig | Set-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
-          displayName: 'Update web.config with environment variables'
-
+            #arguments: --configuration Release
 
         # - task: DotNetCoreCLI@2
         #   displayName: Test
@@ -58,6 +56,20 @@ stages:
             arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
             zipAfterPublish: false
 
+        # - task: FileTransform@2
+        #   displayName: 'Apply File Transformations on web.config'
+        #   inputs:
+        #     folderPath: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+        #     xmlTransformationRules: '-transform **\web.Development.config -xml **\web.config'
+
+            #xmlTargetFiles: '**/web.config'
+        
+        # - powershell: |
+        #     $webConfig = Get-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+        #     $webConfig = $webConfig -replace '__ASPNETCORE_ENVIRONMENT__', '$(ASPNETCORE_ENVIRONMENT)'
+        #     $webConfig | Set-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+        #   displayName: 'Update web.config with environment variables'
+
         - publish: '$(Build.ArtifactStagingDirectory)'
           artifact: drop
 
@@ -72,17 +84,22 @@ stages:
      variables:
      - name: websitePhysicalPath
        value: '%SystemDrive%\inetpub\wwwroot\$(websiteName)'
+     - name: ASPNETCORE_ENVIRONMENT
+       value: 'Development'
+     - name: Release.EnvironmentName
+       value: 'Development'
+     - name: system.debug
+       value: 'true'
 
      strategy:
       runOnce:
         deploy:
           steps: 
-          - task: FileTransform@1
-            displayName: 'Apply File Transformations on web.config'
-            inputs:
-              folderPath: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
-              xmlTargetFiles: '**/web.config'
-              fileType: 'xml'
+          # - task: FileTransform@2
+          #   inputs:
+          #     folderPath: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
+          #     xmlTransformationRules: 
+          #     xmlTargetFiles: '**/web.config'
 
           - task: IISWebAppManagementOnMachineGroup@0
             inputs:            
@@ -116,3 +133,4 @@ stages:
               Package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
               XmlVariableSubstitution: true
               JSONFiles: '**\appsettings.json'
+              XmlTransformation: true
