@@ -5,12 +5,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
+<!-- 
   <ItemGroup>
-    <Content Include="web.config" />
+    <Content Include="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web.Release.config" />
     <Content Include="web.Debug.config" />
-  </ItemGroup>
+  </ItemGroup> -->
 
   <Target Name="TransformWebConfig" AfterTargets="Publish">
     <TransformXml

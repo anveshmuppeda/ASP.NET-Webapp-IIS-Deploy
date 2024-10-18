@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\anvesh.muppeda\\source\\repos\\WebApplication1\\WebApplication1\\WebApplication1.csproj": {}
+    "C:\\Users\\anvesh.muppeda\\Desktop\\Anvesh\\git\\ASP.NET-Webapp-IIS-Deploy\\WebApplication1\\WebApplication1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\anvesh.muppeda\\source\\repos\\WebApplication1\\WebApplication1\\WebApplication1.csproj": {
+    "C:\\Users\\anvesh.muppeda\\Desktop\\Anvesh\\git\\ASP.NET-Webapp-IIS-Deploy\\WebApplication1\\WebApplication1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\anvesh.muppeda\\source\\repos\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+        "projectUniqueName": "C:\\Users\\anvesh.muppeda\\Desktop\\Anvesh\\git\\ASP.NET-Webapp-IIS-Deploy\\WebApplication1\\WebApplication1.csproj",
         "projectName": "WebApplication1",
-        "projectPath": "C:\\Users\\anvesh.muppeda\\source\\repos\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+        "projectPath": "C:\\Users\\anvesh.muppeda\\Desktop\\Anvesh\\git\\ASP.NET-Webapp-IIS-Deploy\\WebApplication1\\WebApplication1.csproj",
         "packagesPath": "C:\\Users\\anvesh.muppeda\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\anvesh.muppeda\\source\\repos\\WebApplication1\\WebApplication1\\obj\\",
+        "outputPath": "C:\\Users\\anvesh.muppeda\\Desktop\\Anvesh\\git\\ASP.NET-Webapp-IIS-Deploy\\WebApplication1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\anvesh.muppeda\\AppData\\Roaming\\NuGet\\NuGet.Config",
