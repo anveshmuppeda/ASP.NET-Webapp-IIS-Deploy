@@ -56,19 +56,18 @@ stages:
             arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
             zipAfterPublish: false
 
-        # - task: FileTransform@2
-        #   displayName: 'Apply File Transformations on web.config'
-        #   inputs:
-        #     folderPath: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
-        #     xmlTransformationRules: '-transform **\web.Development.config -xml **\web.config'
-
-            #xmlTargetFiles: '**/web.config'
+        - task: FileTransform@2
+          displayName: 'Apply File Transformations on web.config'
+          inputs:
+            folderPath: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+            xmlTransformationRules: '-transform **\*.Release.config -xml **\*.config'
+            xmlTargetFiles: '**/web.config'
         
-        # - powershell: |
-        #     $webConfig = Get-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
-        #     $webConfig = $webConfig -replace '__ASPNETCORE_ENVIRONMENT__', '$(ASPNETCORE_ENVIRONMENT)'
-        #     $webConfig | Set-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
-        #   displayName: 'Update web.config with environment variables'
+        - powershell: |
+            $webConfig = Get-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+            $webConfig = $webConfig -replace '__ASPNETCORE_ENVIRONMENT__', '$(ASPNETCORE_ENVIRONMENT)'
+            $webConfig | Set-Content "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/$(projectName)/web.config"
+          displayName: 'Update web.config with environment variables'
 
         - publish: '$(Build.ArtifactStagingDirectory)'
           artifact: drop
@@ -85,9 +84,7 @@ stages:
      - name: websitePhysicalPath
        value: '%SystemDrive%\inetpub\wwwroot\$(websiteName)'
      - name: ASPNETCORE_ENVIRONMENT
-       value: 'Development'
-     - name: Release.EnvironmentName
-       value: 'Development'
+       value: 'BETA'
      - name: system.debug
        value: 'true'
 
@@ -95,11 +92,11 @@ stages:
       runOnce:
         deploy:
           steps: 
-          # - task: FileTransform@2
-          #   inputs:
-          #     folderPath: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
-          #     xmlTransformationRules: 
-          #     xmlTargetFiles: '**/web.config'
+          - task: FileTransform@2
+            inputs:
+              folderPath: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
+              xmlTransformationRules: 
+              xmlTargetFiles: '**/web.config'
 
           - task: IISWebAppManagementOnMachineGroup@0
             inputs:            
@@ -126,11 +123,18 @@ stages:
                           }
                       ]
                   }
-
+          - task: IISWebAppManagementOnMachineGroup@0
+            inputs:
+              IISDeploymentType: 'IISVirtualDirectory'
+              ParentWebsiteNameForVD: '$(websiteName)'
+              VirtualPathForVD: '/TestVirPath'
+              PhysicalPathForVD: '%SystemDrive%\inetpub\wwwroot'
+              VDPhysicalPathAuth: 'VDWindowsAuth'
+              VDAuthUserName: 'TestUser'
+              VDAuthUserPassword: 'TestPass'
           - task: IISWebAppDeploymentOnMachineGroup@0
             inputs:
               WebSiteName: '$(websiteName)'
               Package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(projectName)'
               XmlVariableSubstitution: true
               JSONFiles: '**\appsettings.json'
-              XmlTransformation: true
